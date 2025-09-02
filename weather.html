@@ -1,0 +1,177 @@
+<html>
+<link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>Weather Checker</title>
+</head>
+<style>
+.topic{
+    margin: Auto;
+    text-align:center;
+	 border-radius: 25px;
+	background-color:#ff4800;
+	height: 85px;
+	font-size:60px;
+	width:47%;
+	}
+.center{
+border-radius: 30px;
+	border-color: #C0C0C0;
+	margin: Auto;
+	width: 45%;
+	border: 3px solid #73AD21;
+	padding: 10px;
+	background-color:#f8f8ff;
+	color: #000000;
+	height: 800px;
+}
+input
+ {
+    
+	margin: Auto;
+	margin-left: 130px;
+	//background-color: #FF0000;
+	top:auto;
+	//left:650px; 
+	top: 100px; 
+	height: 50px; 
+	width: 400px;
+
+	
+}
+
+.auto-style1 {
+   background-color:#0050bd;
+	border-radius: 30px;
+	margin-left: 200px;
+	position: relative;
+	text-align: center;
+    padding: 15px 34px;
+	font-size:20px;
+    color:white;
+	width: 260px;
+	height: 50px;
+	display:flex;
+}
+body{
+background-image:url('weather.jpg');
+background-repeat: no-repeat;
+    background-size: cover;
+	}
+p{
+text-align: center;
+font-size:40px;
+}	
+</style>
+<body onload="getLocation()">
+<div class='topic'>
+WEATHER TODAY
+</div>
+<br><br>
+<div class="center" >
+<br>
+<form name="weather">
+<input id="cty" name="cty"  placeholder="Enter the Location"><br><br><br>
+<button onclick="check()" value="Check weather" class="auto-style1" >CHECK WEATHER</button>	
+</form>
+<p id='error' style="color:red;font-size:30px"></p>
+<p id='loc'></p>
+<p id='img'></p>
+<p id='temp'></p>
+<p id='desc'></p>
+<p id='humdty'></p>
+</div>
+<script>
+var x = document.getElementById("error");	
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition,showError);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+function showError(error) {
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      x.innerHTML = "User denied the request for Geolocation."
+      break;
+    case error.POSITION_UNAVAILABLE:
+      x.innerHTML = "Location information is unavailable."
+      break;
+    case error.TIMEOUT:
+      x.innerHTML = "The request to get user location timed out."
+      break;
+    case error.UNKNOWN_ERROR:
+      x.innerHTML = "An unknown error occurred."
+break;
+}}
+
+function showPosition(position){
+console.log(position)
+lat=position.coords.latitude
+lon=position.coords.longitude
+currentloaction(lat,lon)
+}
+function currentloaction(latitude,longitude)
+{
+var pos='https://api.openweathermap.org/data/2.5/weather?lat='+latitude+'&lon='+longitude+'&appid=bbf8e437d7180ca422da749a85159440'
+fetch(pos)
+        .then((response) => {
+          return response.json();
+        })
+		.then (info => {
+		 console.log(info);
+         var des=info['weather']['0']['description']
+		 var temperature = info['main']['temp']
+		 var Plc=info['name']
+		 var humidity=info['main']['humidity']
+		 var country=info['sys']['country']
+		 var image=info['weather']['0']['icon']
+		 var imsrc="https://openweathermap.org/img/w/" + image + ".png";
+		 document.getElementById('desc').innerHTML=des
+		 document.getElementById('temp').innerHTML=(temperature-273.15).toFixed(2)+' °C'
+		 document.getElementById('loc').innerHTML='<i class="bx bxs-map"></i>'+Plc+','+country
+	     document.getElementById('humdty').innerHTML='<i class="bx bxs-droplet-half"></i>'+humidity+'% humidity'
+		 document.getElementById('img').innerHTML='<img src='+imsrc+' height=200px width=200px></img>'
+		 })	
+}
+function check()
+{ 
+var city=document.getElementById('cty').value
+var data='https://api.openweathermap.org/data/2.5/weather?q='+city+'&appid=bbf8e437d7180ca422da749a85159440'
+fetch(data)
+        .then((response) => {
+          return response.json();
+        })
+		.then(result =>weatherdetails(result),event.preventDefault());
+}		
+function weatherdetails(info)
+{		
+		if(info.cod=="404")
+		   {
+		     window.alert('location not found')
+		   }
+		 else
+		     {
+		      console.log(info);
+              var des=info['weather']['0']['description']
+		      var temperature = info['main']['temp']
+		      var Plc=info['name']
+		      var humidity=info['main']['humidity']
+		      var country=info['sys']['country']
+		      var image=info['weather']['0']['icon']
+		      var imsrc="https://openweathermap.org/img/w/" + image + ".png";
+		      document.getElementById('desc').innerHTML=des
+		      document.getElementById('temp').innerHTML=(temperature-273.15).toFixed(2)+' °C'
+		      document.getElementById('loc').innerHTML='<i class="bx bxs-map"></i>'+Plc+','+country
+	          document.getElementById('humdty').innerHTML=	'<i class="bx bxs-droplet-half">'+humidity+'% humidity'
+		     document.getElementById('img').innerHTML='<img src='+imsrc+' height=200px width=200px></img>'
+		    }
+        
+ }	
+		 
+
+</script>
+</body>
+
+</html>
